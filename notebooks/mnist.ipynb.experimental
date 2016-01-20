@@ -1,0 +1,711 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**This notebook is currently very messy! Big credit goes to [Olexa](https://github.com/obilaniu/IFT6266/blob/master/HW/HW1/HW1.ipynb) as I had some issues doing the backprop myself. He goes through the derivations step by step and they are very helpful.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 277,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "from numpy.core.umath_tests import matrix_multiply\n",
+    "import cPickle as pickle\n",
+    "import gzip\n",
+    "import sys\n",
+    "import os"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "----"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "with gzip.open(\"../data/mnist.pkl.gz\") as f:\n",
+    "    train_set, valid_set, test_set = pickle.load(f)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "Xt, yt = train_set"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "((50000, 784), (50000,))"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "Xt.shape, yt.shape"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Let us now define the loss function"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 341,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.0049455319476775228"
+      ]
+     },
+     "execution_count": 341,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "loss(activations, yt_batch)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "----"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def one_hot(indices, num_classes):\n",
+    "    b = np.zeros( (indices.shape[0], num_classes) )\n",
+    "    for i in range(0, b.shape[0]):\n",
+    "        b[i, indices[i] ] = 1\n",
+    "    return b"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def loss(input_, targets):\n",
+    "    targets = targets.T\n",
+    "    assert input_.shape[0] == targets.shape[0]\n",
+    "    return -np.log(np.sum(targets * activations))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def sigmoid(x):\n",
+    "    return 1.0 / (1.0 + np.exp(-x))\n",
+    "def softmax(x):\n",
+    "    return np.exp(x) / np.sum(np.exp(x))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 331,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "class OneLayerMLP(object):\n",
+    "    def __init__(self, num_input_units, num_hidden_units, num_output_units):\n",
+    "        self.W = np.random.normal(0, 1, (num_hidden_units, num_input_units))\n",
+    "        self.V = np.random.normal(0, 1, (num_output_units, num_hidden_units))\n",
+    "        self.b = np.random.normal(0, 1, (num_hidden_units, 1))\n",
+    "        self.c = np.random.normal(0, 1, (num_output_units, 1))\n",
+    "        self.num_input_units = num_input_units\n",
+    "        self.num_hidden_units = num_hidden_units\n",
+    "        self.num_output_units = num_output_units\n",
+    "    def loss(self, activation, target):\n",
+    "        assert activation.shape[0] == target.shape[0]\n",
+    "        return -np.log(np.sum(target * activation))\n",
+    "    def classify(self, x):\n",
+    "        return self.forward(x)[-1]\n",
+    "    def forward(self, x, debug=False):\n",
+    "        assert x.shape[0] == self.num_input_units\n",
+    "        hprime = np.dot(self.W, x) + self.b\n",
+    "        h = sigmoid(hprime)\n",
+    "        yprime = np.dot(self.V, h) + self.c\n",
+    "        y = softmax(yprime)\n",
+    "        assert y.shape[0] == self.num_output_units\n",
+    "        if debug:\n",
+    "            print x.shape\n",
+    "            print hprime.shape\n",
+    "            print h.shape\n",
+    "            print yprime.shape\n",
+    "            print y.shape\n",
+    "        return [x, hprime, h, yprime, y]\n",
+    "    def backprop(self, inputs, target, debug=False):\n",
+    "        x = inputs[0]\n",
+    "        y = inputs[-1]\n",
+    "        t = target\n",
+    "        dL_dy = -t / y\n",
+    "        dL_dyprime = y - t\n",
+    "        h = inputs[2] # h = inputs[2] = sigm(Wx+b)\n",
+    "        \n",
+    "        # tricky minibatch stuff\n",
+    "        # dL_dyprime goes from (10, bs) to (bs, 10, 1)\n",
+    "        # h.T goes from (bs, 100) to (bs, 1, 100)\n",
+    "        # that means dL_dV becomes (bs, 10, 100)\n",
+    "        dL_dyprime_batch = dL_dyprime.reshape(dL_dyprime.shape[1], dL_dyprime.shape[0], 1)\n",
+    "        h_batch = h.T\n",
+    "        h_batch = h_batch.reshape( h_batch.shape[0], 1, h_batch.shape[1])\n",
+    "        dL_dV = matrix_multiply(dL_dyprime_batch, h_batch) # np.dot(dL_dyprime, h.T)\n",
+    "        dL_dV = np.mean(dL_dV, axis=0)\n",
+    "            \n",
+    "        dL_dc = dL_dyprime\n",
+    "        #print dL_dc.shape\n",
+    "        # average over cols\n",
+    "        dL_dc = dL_dc.mean(0)\n",
+    "        \n",
+    "        dL_dh = np.dot(self.V.T, dL_dyprime)\n",
+    "        h_prime = inputs[1]\n",
+    "        dL_dhprime = dL_dh * h * (1 - h)\n",
+    "\n",
+    "        # again, tricky minibatch stuff\n",
+    "        # dL_dhprime goes from (100, bs) to (bs, 100, 1)\n",
+    "        # x.T goes from (bs, 784) to (bs, 1, 784)\n",
+    "        dL_dhprime_batch = dL_dhprime.reshape(dL_dhprime.shape[1], dL_dhprime.shape[0], 1)\n",
+    "        xT_batch = x.T\n",
+    "        xT_batch = xT_batch.reshape(xT_batch.shape[0], 1, xT_batch.shape[1])\n",
+    "        #print dL_dhprime_batch.shape\n",
+    "        #print xT_batch.shape\n",
+    "        dL_dW = matrix_multiply(dL_dhprime_batch, xT_batch)\n",
+    "        dL_dW = np.mean(dL_dW, axis=0)\n",
+    "        \n",
+    "        dL_db = dL_dhprime    \n",
+    "        # average the bias\n",
+    "        #print dL_db.shape\n",
+    "        dL_db = dL_db.mean(0)\n",
+    "        \n",
+    "        #assert dL_dW.shape == self.W.shape\n",
+    "        #assert dL_db.shape == self.b.shape\n",
+    "        #assert dL_dV.shape == self.V.shape\n",
+    "        #assert dL_dc.shape == self.c.shape\n",
+    "        return dL_dW, dL_db, dL_dV, dL_dc\n",
+    "    def update(self, grads, learning_rate):\n",
+    "        dL_dW, dL_db, dL_dV, dL_dc = grads\n",
+    "        self.W = self.W - learning_rate*dL_dW\n",
+    "        self.b = self.b - learning_rate*dL_db\n",
+    "        self.V = self.V - learning_rate*dL_dV\n",
+    "        self.c = self.c - learning_rate*dL_dc"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/anaconda/lib/python2.7/site-packages/ipykernel/__main__.py:33: RuntimeWarning: overflow encountered in divide\n",
+      "/anaconda/lib/python2.7/site-packages/ipykernel/__main__.py:33: RuntimeWarning: invalid value encountered in divide\n",
+      "/anaconda/lib/python2.7/site-packages/ipykernel/__main__.py:33: RuntimeWarning: divide by zero encountered in divide\n",
+      "/anaconda/lib/python2.7/site-packages/ipykernel/__main__.py:12: RuntimeWarning: divide by zero encountered in log\n"
+     ]
+    }
+   ],
+   "source": [
+    "mlp = OneLayerMLP(num_input_units=784, num_hidden_units=100, num_output_units=10)\n",
+    "for epoch in range(0, 1):\n",
+    "    this_losses = []\n",
+    "    for i in range(0, Xt.shape[0]):\n",
+    "        Xt_batch = Xt[i:i+2].T\n",
+    "        yt_batch = one_hot( yt[i:i+2], num_classes=10 ).T\n",
+    "        outputs = mlp.forward(Xt_batch)\n",
+    "        this_losses.append(mlp.loss(outputs[-1], yt_batch))\n",
+    "        grads = mlp.backprop(outputs, yt_batch)\n",
+    "        mlp.update(grads, learning_rate=0.01)\n",
+    "        #break\n",
+    "    print \"this loss: %f\" % (np.mean(this_losses))\n",
+    "    #break"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 227,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(10, 2)\n",
+      "(2, 100)\n",
+      "(10, 100)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "(1, 100)"
+      ]
+     },
+     "execution_count": 227,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "outputs = mlp.forward(Xt[0:2].T)\n",
+    "\n",
+    "y = outputs[-1]\n",
+    "t = one_hot(yt[0:2], num_classes=10).T\n",
+    "dL_dy = -t / y\n",
+    "dL_dyprime = y - t\n",
+    "dL_dyprime.shape\n",
+    "h = outputs[2]\n",
+    "dL_dV = np.dot(dL_dyprime, h.T)\n",
+    "print dL_dyprime.shape\n",
+    "print h.T.shape\n",
+    "print dL_dV.shape\n",
+    "\n",
+    "#print np.dot( dL_dyprime[:,0,None], h.T[0,None,:] ).shape\n",
+    "\n",
+    "h.T[0, None, :].shape\n",
+    "\n",
+    "#stuff = mlp.backprop(outputs, one_hot(yt[0:3], num_classes=10).T)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 263,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "dL_dyprime_batch = dL_dyprime.reshape(dL_dyprime.shape[1], dL_dyprime.shape[0], 1)\n",
+    "h_batch = h.T\n",
+    "h_batch = h_batch.reshape( h_batch.shape[0], 1, h_batch.shape[1])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 284,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(10, 2)"
+      ]
+     },
+     "execution_count": 284,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dL_dyprime.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 265,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(2, 1, 100)"
+      ]
+     },
+     "execution_count": 265,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "h_batch.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 267,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "?np.apply_along_axis()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 292,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "az = matrix_multiply( np.ones((10, 100, 1)), np.ones((1, 50)) )"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 293,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "bz = matrix_multiply( np.ones((10, 100, 1)), np.ones((10, 1, 50)) )"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 296,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "?matrix_multiply"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 279,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(2, 10, 100)"
+      ]
+     },
+     "execution_count": 279,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from numpy.core.umath_tests import matrix_multiply\n",
+    "mm = matrix_multiply(dL_dyprime_batch, h_batch)\n",
+    "mm.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 281,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(10, 100)"
+      ]
+     },
+     "execution_count": 281,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "np.mean(mm, axis=0).shape"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "----"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 62,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "preds = np.argmax(mlp.classify(Xt.T).T, axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 63,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.88246000000000002"
+      ]
+     },
+     "execution_count": 63,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "np.sum(yt == preds) * 1.0 / len(preds)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 184,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[  2.39979656e-07,   9.23638597e-01],\n",
+       "       [  2.20138583e-07,   5.04057111e-09],\n",
+       "       [  1.91417110e-07,   1.35390203e-05],\n",
+       "       [  2.56108142e-04,   2.88408791e-04],\n",
+       "       [  1.24316110e-08,   4.94803472e-07],\n",
+       "       [  6.71661825e-02,   8.34923910e-03],\n",
+       "       [  4.85142025e-07,   1.97681506e-05],\n",
+       "       [  1.10287884e-07,   1.77744941e-04],\n",
+       "       [  2.40798434e-06,   4.80289883e-05],\n",
+       "       [  1.22971522e-06,   3.69864278e-05]])"
+      ]
+     },
+     "execution_count": 184,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "mlp.forward(Xt[0:2].T)[-1]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "----"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**4. Using the finite differences method, implement a numerical version of the code that computes the gradients, and compare the analytical gradients and the numerical gradients using a toy example (e.g. a random pair of feature and target vectors for an MLP with 10 input dimensions, 5 hidden units and 2 categories). A mismatch between the two indicates an error in the implementation of the analytical gradients. The numpy.testing.assert_allclose method will be handy for that.**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Ok, first let's write a function that will give us a random instance pair from MNIST with 10 features and 2 classes."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 87,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "def get_random_small_instance(Xt, yt, num_classes=10):\n",
+    "    idx = np.random.randint(0, Xt.shape[0])\n",
+    "    rand_x = Xt[idx:idx+1]\n",
+    "    rand_y = yt[idx:idx+1]\n",
+    "    if rand_y[0] in [0,1,2,3,4]:\n",
+    "        rand_y[0] = 0\n",
+    "    else:\n",
+    "        rand_y[0] = 1\n",
+    "    rand_y = one_hot(rand_y, num_classes=2).T\n",
+    "    #print rand_x\n",
+    "    idx = np.random.randint(0, Xt.shape[1])\n",
+    "    rand_x = rand_x[:,idx:idx+10].T\n",
+    "    return rand_x, rand_y"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Iterate through all the parameters of the small MLP, collect the gradients calculated using finite differences, then get the actual backprop gradients, and run a comparison using `np.testing.assert_allclose`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 177,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "x_small, y_small = get_random_small_instance(Xt, yt)\n",
+    "small_mlp = OneLayerMLP(num_input_units=x_small.shape[0], num_hidden_units=5, num_output_units=y_small.shape[0])\n",
+    "delta = 1e-6\n",
+    "all_grads = []\n",
+    "how_many = 0\n",
+    "for matrix in [small_mlp.W, small_mlp.b, small_mlp.V, small_mlp.c]:\n",
+    "    how_many += (matrix.shape[0]*matrix.shape[1])\n",
+    "    for i in range(0, matrix.shape[0]):\n",
+    "        for j in range(0, matrix.shape[1]):\n",
+    "            this_value_original = matrix[i,j]\n",
+    "            # set theta = theta - delta, then calculate cost\n",
+    "            matrix[i,j] = matrix[i,j] - delta\n",
+    "            this_cost_minus = small_mlp.loss( small_mlp.forward(x_small)[-1], y_small )\n",
+    "            # set theta = theta + delta, then calculate cost\n",
+    "            matrix[i,j] = this_value_original + delta\n",
+    "            this_cost_plus = small_mlp.loss( small_mlp.forward(x_small)[-1], y_small )\n",
+    "            all_grads.append( ((this_cost_plus - this_cost_minus) / (2*delta)) )\n",
+    "            matrix[i,j] = this_value_original"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 178,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "assert len(all_grads) == how_many"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 179,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "this_outputs = small_mlp.forward(x_small)\n",
+    "p1, p2, p3, p4 = small_mlp.backprop(this_outputs, y_small)\n",
+    "actual_all_grads = []\n",
+    "actual_all_grads += p1.flatten().tolist()\n",
+    "actual_all_grads += p2.flatten().tolist()\n",
+    "actual_all_grads += p3.flatten().tolist()\n",
+    "actual_all_grads += p4.flatten().tolist()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 180,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "assert len(all_grads) == len(actual_all_grads)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 181,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "np.testing.assert_allclose(all_grads, actual_all_grads, rtol=1e-5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 2",
+   "language": "python",
+   "name": "python2"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.10"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}
