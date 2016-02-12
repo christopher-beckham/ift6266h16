@@ -70,8 +70,12 @@ def train(args):
     num_epochs = args["num_epochs"]
     batch_size = args["batch_size"]
 
-    print "epoch,train_loss,valid_loss,has_valid_loss_improved"
+    print "epoch,train_loss,valid_loss,has_train_loss_improved,has_valid_loss_improved"
+    
     best_val_score_so_far = float('inf')
+    best_train_score_so_far = float('inf')
+    best_model = None
+
     for epoch in range(0, num_epochs):
         b = 0
         train_losses = []
@@ -82,15 +86,27 @@ def train(args):
             b += 1
             if b*batch_size >= len(X_train):
                 break
+            
         this_valid_loss = eval_fn(X_valid, y_valid)
-        this_has_improved = 0
+        this_valid_has_improved = 0
         if this_valid_loss < best_val_score_so_far:
             best_val_score_so_far = this_valid_loss
-            this_has_improved = 1
+            this_valid_has_improved = 1
+            best_model = lasagne.layers.get_all_params_values(l_out)
+            
+        this_train_loss = np.mean(train_losses)
+        this_train_has_improved = 0
+        if this_train_loss < best_train_score_so_far:
+            best_train_score_so_far = this_train_loss
+            this_train_has_improved = 1
 
-        print str(epoch) + "," + str(np.mean(train_losses)) + "," + str(this_valid_loss) + "," + str(this_has_improved)
+        print str(epoch) + "," \
+            + str(this_train_loss) + "," \
+            + str(this_valid_loss) + "," \
+            + str(this_train_has_improved) + "," \
+            + str(this_valid_has_improved)
 
-    return lasagne.layers.get_all_param_values(l_out)
+    return best_model
 
 def test(args):
     pass
