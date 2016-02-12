@@ -7,3 +7,4 @@ IFT6266 at UdeM
 * [Maxout summary](http://colinraffel.com/wiki/maxout_networks)
 * [Recurrent neural net lecture](https://www.youtube.com/watch?v=56TYLaQN4N8)
 * [Understanding LSTMs](http://colah.github.io/posts/2015-08-Understanding-LSTMs/)
+* [Regularised matrix computations](http://web.eecs.umich.edu/~aey/recent/regular.pdf)
