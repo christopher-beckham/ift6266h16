@@ -20,9 +20,13 @@ def prepare(args):
     num_inputs = args["num_inputs"] # should always be 1
     seq_length = X_train.shape[1] # determined by pkl
     num_hidden_units = args["num_hidden_units"]
+    use_lstm = args["use_lstm"]
 
     l_input = InputLayer((None, seq_length, num_inputs))
-    l_forward = RecurrentLayer(l_input, num_units=num_hidden_units)
+    if use_lstm:
+        l_forward = LSTMLayer(l_input, num_units=num_hidden_units)
+    else:
+        l_forward = RecurrentLayer(l_input, num_units=num_hidden_units)
     """
     In order to connect a recurrent layer to a dense layer, we need to
     flatten the first two dimensions (our "sample dimensions"); this will
