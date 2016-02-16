@@ -13,10 +13,8 @@ from lasagne.nonlinearities import *
 from lasagne.objectives import *
 from lasagne.updates import *
 
-def prepare(args):
-
+def get_net(args):
     X_train = args["X_train"]
-
     num_inputs = args["num_inputs"] # should always be 1
     seq_length = X_train.shape[1] # determined by pkl
     num_hidden_units = args["num_hidden_units"]
@@ -24,6 +22,7 @@ def prepare(args):
 
     l_input = InputLayer((None, seq_length, num_inputs))
     if use_lstm:
+        sys.stderr.write("using lstm layers..\n")
         l_forward = LSTMLayer(l_input, num_units=num_hidden_units)
     else:
         l_forward = RecurrentLayer(l_input, num_units=num_hidden_units)
@@ -36,6 +35,15 @@ def prepare(args):
     l_dense = DenseLayer(l_shp, num_units=1, nonlinearity=linear)
     l_out = ReshapeLayer(l_dense, (-1, seq_length, 1))
     sys.stderr.write("Number of params in model: %i\n" % count_params(l_out))
+
+    return l_out
+
+def prepare(args):
+
+    l_out = get_net(args)
+
+    X_train = args["X_train"]
+    seq_length = X_train.shape[1]
 
     X = T.tensor3('X')
     net_out = get_output(l_out, X)
@@ -53,6 +61,7 @@ def prepare(args):
 
     train_fn = theano.function([X], loss, updates=updates)
     eval_fn = theano.function([X], loss)
+    out_fn = theano.function([X], net_out)
 
     return {
         "l_out": l_out,
@@ -64,11 +73,11 @@ def prepare(args):
         "momentum": momentum,
         "updates": updates,
         "train_fn": train_fn,
-        "eval_fn": eval_fn
+        "eval_fn": eval_fn,
+        "out_fn": out_fn
     }
 
 def train(args):
-
     X_train, X_valid = args["X_train"], args["X_valid"]
 
     symbols = prepare(args)
@@ -116,5 +125,32 @@ def train(args):
 
     return best_model
 
-def test(args):
-    pass
+def generate(args, model, seed, length):
+    X_test = args["X_test"]
+    symbols = prepare(args)
+
+    out_fn = symbols["out_fn"]
+
+    l_out = get_net(args)
+
+    set_all_param_values(l_out, model)
+
+    """
+    seed = X_valid[0:1]
+    seed = seed.reshape( (seed.shape[1], 1, 1) )
+    seed = seed[0].reshape( (1,1,1) )
+    """
+
+    generated_seq = []
+    prev_input = seed
+    for x in range(0, length):
+        next_input = eval_fn(prev_input)
+        generated_seq.append(next_input.flatten()[0])
+        prev_input = next_input
+
+    return generated_seq
+
+
+
+
+
