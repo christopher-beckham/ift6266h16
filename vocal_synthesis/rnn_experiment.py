@@ -12,6 +12,8 @@ from lasagne.init import *
 from lasagne.nonlinearities import *
 from lasagne.objectives import *
 from lasagne.updates import *
+# ---
+from time import time
 
 
 def prepare(args):
@@ -65,13 +67,16 @@ def train(args):
     num_epochs = args["num_epochs"]
     batch_size = args["batch_size"]
 
-    print "epoch,train_loss,valid_loss,has_train_loss_improved,has_valid_loss_improved"
+    print "epoch,train_loss,valid_loss,has_train_loss_improved,has_valid_loss_improved,duration"
     
     best_val_score_so_far = float('inf')
     best_train_score_so_far = float('inf')
     best_model = None
 
     for epoch in range(0, num_epochs):
+
+        t0 = time()
+
         b = 0
         train_losses = []
         while True:
@@ -94,11 +99,14 @@ def train(args):
             best_train_score_so_far = this_train_loss
             this_train_has_improved = 1
 
+        t1 = time() - t0
+
         print str(epoch) + "," \
             + str(this_train_loss) + "," \
             + str(this_valid_loss) + "," \
             + str(this_train_has_improved) + "," \
-            + str(this_valid_has_improved)
+            + str(this_valid_has_improved) + "," \
+            + str(t1)
 
     return best_model
 
