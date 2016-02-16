@@ -22,7 +22,11 @@ def prepare(args):
     l_out = args["l_out"]
 
     X_train = args["X_train"]
-    seq_length = X_train.shape[1]
+
+    if "seq_length" not in args:
+        seq_length = X_train.shape[1]
+    else:
+        seq_length = args["seq_length"]
 
     X = T.tensor3('X')
     net_out = get_output(l_out, X)
