@@ -50,12 +50,12 @@ sys.stderr.write("X_test shape = %s\n" % str(X_test.shape))
 
 args = dict()
 args["num_inputs"] = 1
-args["num_hidden_units"] = 10
+args["num_hidden_units"] = 100
 args["use_lstm"] = True
-args["batch_size"] = 128
+args["batch_size"] = 1000
 args["learning_rate"] = 0.01
 args["momentum"] = 0.9
-args["num_epochs"] = 5
+args["num_epochs"] = 200
 args["X_train"] = X_train
 args["X_valid"] = X_valid
 args["X_test"] = X_test
