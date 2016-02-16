@@ -4,43 +4,6 @@ from scipy.io import wavfile
 import os
 import sys
 import cPickle as pickle
-# ---
-import lasagne
-from lasagne.layers import *
-from lasagne.init import *
-from lasagne.nonlinearities import *
-from lasagne.objectives import *
-from lasagne.updates import *
-
-def get_basic_net(args):
-    X_train = args["X_train"]
-    num_inputs = args["num_inputs"] # should always be 1
-    seq_length = X_train.shape[1] # determined by pkl
-    num_hidden_units = args["num_hidden_units"]
-    use_lstm = args["use_lstm"]
-
-    if "seq_length" not in args:
-        seq_length = X_train.shape[1]
-    else:
-        seq_length = args["seq_length"]
-
-    l_input = InputLayer((None, seq_length, num_inputs))
-    if use_lstm:
-        sys.stderr.write("using lstm layers..\n")
-        l_forward = LSTMLayer(l_input, num_units=num_hidden_units)
-    else:
-        l_forward = RecurrentLayer(l_input, num_units=num_hidden_units)
-    """
-    In order to connect a recurrent layer to a dense layer, we need to
-    flatten the first two dimensions (our "sample dimensions"); this will
-    cause each time step of each sequence to be processed independently
-    """
-    l_shp = ReshapeLayer(l_forward, (-1, num_hidden_units))
-    l_dense = DenseLayer(l_shp, num_units=1, nonlinearity=linear)
-    l_out = ReshapeLayer(l_dense, (-1, seq_length, 1))
-    sys.stderr.write("Number of params in model: %i\n" % count_params(l_out))
-    return l_out
-
 
 if __name__ == "__main__":
 
@@ -58,18 +21,16 @@ if __name__ == "__main__":
 
     args = dict()
     args["num_inputs"] = 1
-    args["num_hidden_units"] = 10
-    args["use_lstm"] = True
-    args["batch_size"] = 128
+    args["batch_size"] = 1000
     args["learning_rate"] = 0.01
     args["momentum"] = 0.9
-    args["num_epochs"] = 5
+    args["num_epochs"] = 500
     args["X_train"] = X_train
     args["X_valid"] = X_valid
     args["X_test"] = X_test
-
-    l_out = get_basic_net(args)
-    args["l_out"] = l_out
+    
+    #args["config"] = "basic_net.py"
+    args["config"] = "basic_net_d2.py"
 
     model = experiment.train(args)
 

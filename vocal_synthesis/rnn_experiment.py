@@ -14,12 +14,14 @@ from lasagne.objectives import *
 from lasagne.updates import *
 # ---
 from time import time
-
+import imp
 
 def prepare(args):
 
-    #l_out = get_net(args)
-    l_out = args["l_out"]
+    sys.stderr.write("loading config: %s\n" % ("configurations/" + args["config"]))
+    config = imp.load_source("config", "configurations/" + args["config"])
+
+    l_out = config.get_net(args)
 
     X_train = args["X_train"]
 
