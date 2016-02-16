@@ -8,8 +8,7 @@
     #	python -u run_exp.py 100 50 not_lstm models/s100_h50.model
 
 THEANO_FLAGS=mode=FAST_RUN,floatX=float32,nvcc.fastmath=True \
-	python -u run_exp.py 100 50 lstm models_lstm/s100_h50.model
-
+	python -u run_exp.py $DATA_DIR/100_60sec.pkl models/100_60sec.model
 
 #done
 #done

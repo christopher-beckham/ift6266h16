@@ -13,34 +13,11 @@ from lasagne.nonlinearities import *
 from lasagne.objectives import *
 from lasagne.updates import *
 
-def get_net(args):
-    X_train = args["X_train"]
-    num_inputs = args["num_inputs"] # should always be 1
-    seq_length = X_train.shape[1] # determined by pkl
-    num_hidden_units = args["num_hidden_units"]
-    use_lstm = args["use_lstm"]
-
-    l_input = InputLayer((None, seq_length, num_inputs))
-    if use_lstm:
-        sys.stderr.write("using lstm layers..\n")
-        l_forward = LSTMLayer(l_input, num_units=num_hidden_units)
-    else:
-        l_forward = RecurrentLayer(l_input, num_units=num_hidden_units)
-    """
-    In order to connect a recurrent layer to a dense layer, we need to
-    flatten the first two dimensions (our "sample dimensions"); this will
-    cause each time step of each sequence to be processed independently
-    """
-    l_shp = ReshapeLayer(l_forward, (-1, num_hidden_units))
-    l_dense = DenseLayer(l_shp, num_units=1, nonlinearity=linear)
-    l_out = ReshapeLayer(l_dense, (-1, seq_length, 1))
-    sys.stderr.write("Number of params in model: %i\n" % count_params(l_out))
-
-    return l_out
 
 def prepare(args):
 
-    l_out = get_net(args)
+    #l_out = get_net(args)
+    l_out = args["l_out"]
 
     X_train = args["X_train"]
     seq_length = X_train.shape[1]
