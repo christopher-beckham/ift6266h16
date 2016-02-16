@@ -8,10 +8,16 @@ test_start = 0.9
 valid_start = 0.8
 
 seq_length = int(sys.argv[1])
-data_folder = "/Volumes/CB_RESEARCH/vocal_synthesis/"
+how_many_seconds = int(sys.argv[2])
+
+data_folder = os.environ["DATA_DIR"]
 
 fs, data = wavfile.read(data_folder + os.path.sep + "data.wav")
 data = np.asarray(data, dtype="float32")
+
+if how_many_seconds > 0:
+    sys.stderr.write("truncating data to %i seconds\n" % how_many_seconds)
+    data = data[0: how_many_seconds*fs]
 
 # e.g. 0 -> 0.8
 train_data = data[ 0 : len(data)*valid_start ]
@@ -41,5 +47,5 @@ for i in range(0, len(dd)):
     seqs = np.asarray(seqs)
     dd[i] = seqs
 
-with open(sys.argv[2], "wb") as f:
+with open(sys.argv[3], "wb") as f:
     pickle.dump( (dd, min_, max_), f, pickle.HIGHEST_PROTOCOL )
