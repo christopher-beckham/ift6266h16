@@ -15,6 +15,8 @@ from lasagne.updates import *
 # ---
 from time import time
 import imp
+# ---
+import cPickle as pickle
 
 def prepare(args):
 
@@ -24,8 +26,18 @@ def prepare(args):
     l_out = config.get_net(args)
 
     if "in_model" in args:
-        sys.stderr.write("loading existing model at: %s" % args["in_model"])
-        l_out.set_all_param_values(l_out, args["in_model"])
+        sys.stderr.write("loading existing model at: %s\n" % args["in_model"])
+        layers = get_all_layers(l_out)[::-1]
+        sys.stderr.write("debug: %s\n" % str(layers))
+        with open(args["in_model"]) as f:
+            in_model = pickle.load(f)
+        for i in range(0, len(layers)):
+            try:
+                sys.stderr.write("debug: success\n")
+                set_all_param_values(layers[i], in_model)
+                break
+            except:
+                continue
 
     X_train = args["X_train"]
 
