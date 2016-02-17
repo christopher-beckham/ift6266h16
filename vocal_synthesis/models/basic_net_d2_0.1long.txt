@@ -2999,4 +2999,3 @@ epoch,train_loss,valid_loss,has_train_loss_improved,has_valid_loss_improved,dura
 2997,7.75747e-05,8.03371658549e-05,0,0,4.42488217354
 2998,7.79687e-05,8.07418255135e-05,0,0,4.42547082901
 2999,7.84762e-05,8.12685975689e-05,0,0,4.42303109169
-writing to file: models/basic_net_d2_adagrad.model

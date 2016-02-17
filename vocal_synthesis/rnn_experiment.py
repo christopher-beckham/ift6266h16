@@ -23,6 +23,10 @@ def prepare(args):
 
     l_out = config.get_net(args)
 
+    if "in_model" in args:
+        sys.stderr.write("loading existing model at: %s" % args["in_model"])
+        l_out.set_all_param_values(l_out, args["in_model"])
+
     X_train = args["X_train"]
 
     if "seq_length" not in args:
