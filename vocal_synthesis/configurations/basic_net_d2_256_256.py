@@ -27,7 +27,7 @@ def get_net(args):
     flatten the first two dimensions (our "sample dimensions"); this will
     cause each time step of each sequence to be processed independently
     """
-    l_shp = ReshapeLayer(l_forward2, (-1, num_hidden_units))
+    l_shp = ReshapeLayer(l_forward2, (-1, 256))
     l_dense = DenseLayer(l_shp, num_units=1, nonlinearity=linear)
     l_out = ReshapeLayer(l_dense, (-1, seq_length, 1))
     sys.stderr.write("Number of params in model: %i\n" % count_params(l_out))

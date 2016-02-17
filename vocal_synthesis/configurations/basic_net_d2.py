@@ -18,9 +18,11 @@ def get_net(args):
     else:
         seq_length = args["seq_length"]
 
+    grad_clip=100
+
     l_input = InputLayer((None, seq_length, num_inputs))
-    l_forward = LSTMLayer(l_input, num_units=num_hidden_units)
-    l_forward2 = LSTMLayer(l_forward, num_units=num_hidden_units)
+    l_forward = LSTMLayer(l_input, num_units=num_hidden_units,grad_clipping=grad_clip)
+    l_forward2 = LSTMLayer(l_forward, num_units=num_hidden_units,grad_clipping=grad_clip)
     
     """
     In order to connect a recurrent layer to a dense layer, we need to

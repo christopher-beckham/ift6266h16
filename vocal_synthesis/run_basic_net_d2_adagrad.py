@@ -21,14 +21,14 @@ if __name__ == "__main__":
 
     args = dict()
     args["num_inputs"] = 1
-    args["batch_size"] = 1000
+    args["batch_size"] = 500
     args["learning_rate"] = 0.1
     args["momentum"] = 0.9
-    args["num_epochs"] = 500
+    args["num_epochs"] = 3000
     args["X_train"] = X_train
     args["X_valid"] = X_valid
     args["X_test"] = X_test
-    args["adagrad"] = True
+    #args["adagrad"] = True
     
     #args["config"] = "basic_net.py"
     args["config"] = "basic_net_d2.py"
