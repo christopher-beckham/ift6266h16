@@ -37,12 +37,14 @@ def prepare(args):
     loss = squared_error(net_out[:,0:seq_length-1,:], X[:,1::,:]).mean()
     params = get_all_params(l_out, trainable=True)
     loss_fn = theano.function([X], loss)
-    updates = adagrad(loss, params, 0.01)
 
     learning_rate = args["learning_rate"]
     momentum = args["momentum"]
-    updates = lasagne.updates.nesterov_momentum(
-        loss, params, learning_rate=learning_rate, momentum=momentum)
+    if "adagrad" in args:
+        updates = adagrad(loss, params, learning_rate)
+    else:
+        updates = lasagne.updates.nesterov_momentum(
+            loss, params, learning_rate=learning_rate, momentum=momentum)
 
     train_fn = theano.function([X], loss, updates=updates)
     eval_fn = theano.function([X], loss)
