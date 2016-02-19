@@ -1,5 +1,6 @@
 import sys
 import os
+import random
 from scipy.io import wavfile
 # ---
 import numpy as np
@@ -18,7 +19,11 @@ import imp
 # ---
 import cPickle as pickle
 
+
 def prepare(args):
+
+    np.random.seed(args["seed"])
+    random.seed(args["seed"])
 
     sys.stderr.write("loading config: %s\n" % ("configurations/" + args["config"]))
     config = imp.load_source("config", "configurations/" + args["config"])
@@ -56,11 +61,17 @@ def prepare(args):
 
     learning_rate = args["learning_rate"]
     momentum = args["momentum"]
-    if "adagrad" in args:
-        updates = adagrad(loss, params, learning_rate)
+
+    grads = T.grad(loss, params)
+    #if "max_norm" in args:
+    #	grads = [norm_constraint(grad, args["max_norm"], range(grad.ndim)) for grad in grads]	
+
+    if "update_method" in args:
+  	update_method = args["update_method"]
+        updates = update_method(grads, params, learning_rate)
     else:
         updates = lasagne.updates.nesterov_momentum(
-            loss, params, learning_rate=learning_rate, momentum=momentum)
+            grads, params, learning_rate=learning_rate, momentum=momentum)
 
     train_fn = theano.function([X], loss, updates=updates)
     eval_fn = theano.function([X], loss)
@@ -97,7 +108,12 @@ def train(args):
     best_train_score_so_far = float('inf')
     best_model = None
 
+    idxs = [x for x in range(0, X_train.shape[0])]
+
     for epoch in range(0, num_epochs):
+
+	random.shuffle(idxs)
+	X_train = X_train[idxs]
 
         t0 = time()
 

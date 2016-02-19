@@ -21,16 +21,18 @@ if __name__ == "__main__":
 
     args = dict()
     args["num_inputs"] = 1
-    args["batch_size"] = 1000
+    args["batch_size"] = 500 # 1000 for 1, d3
     args["learning_rate"] = 0.01
     args["momentum"] = 0.9
-    args["num_epochs"] = 500
+    args["num_epochs"] = 2000
     args["X_train"] = X_train
     args["X_valid"] = X_valid
     args["X_test"] = X_test
     
     #args["config"] = "basic_net.py"
     args["config"] = "basic_net_d2.py"
+    #args["config"] = "basic_net_d3.py"
+    #args["config"] = "basic_net_d2_256_256.py"
 
     model = experiment.train(args)
 

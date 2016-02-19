@@ -28,7 +28,7 @@ if __name__ == "__main__":
     args["X_train"] = X_train
     args["X_valid"] = X_valid
     args["X_test"] = X_test
-    args["adagrad"] = True
+    #args["adagrad"] = True
     
     #args["config"] = "basic_net.py"
     args["config"] = "basic_net_d3.py"
