@@ -29,7 +29,7 @@ def get_net(args):
     cause each time step of each sequence to be processed independently
     """
     l_shp = ReshapeLayer(l_forward, (-1, num_hidden_units))
-    l_dense = DenseLayer(l_shp, num_units=1, nonlinearity=linear)
+    l_dense = DenseLayer(l_shp, num_units=num_inputs, nonlinearity=linear)
     l_out = ReshapeLayer(l_dense, (-1, seq_length, 1))
     sys.stderr.write("Number of params in model: %i\n" % count_params(l_out))
     return l_out
