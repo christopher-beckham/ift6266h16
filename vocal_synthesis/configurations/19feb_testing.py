@@ -7,6 +7,7 @@ from lasagne.updates import *
 import sys
 
 def get_net(args):
+    # e.g. (bs, 50, 1800)
     X_train = args["X_train"]
     num_inputs = X_train.shape[2]
     seq_length = X_train.shape[1] # determined by pkl
@@ -30,6 +31,6 @@ def get_net(args):
     """
     l_shp = ReshapeLayer(l_forward, (-1, num_hidden_units))
     l_dense = DenseLayer(l_shp, num_units=num_inputs, nonlinearity=linear)
-    l_out = ReshapeLayer(l_dense, (-1, seq_length, 1))
+    l_out = ReshapeLayer(l_dense, (-1, seq_length, num_inputs))
     sys.stderr.write("Number of params in model: %i\n" % count_params(l_out))
     return l_out
