@@ -22,14 +22,14 @@ if __name__ == "__main__":
     args = dict()
     args["seed"] = 0
     args["batch_size"] = 32
-    args["learning_rate"] = 0.001
+    args["learning_rate"] = 0.01
     args["momentum"] = 0.9
     args["num_epochs"] = 1000
     args["X_train"] = X_train
     args["X_valid"] = X_valid
     args["X_test"] = X_test
     
-    args["config"] = "19feb_testing.py"
+    args["config"] = "19feb_testing_c.py"
 
     model = experiment.train(args)
 

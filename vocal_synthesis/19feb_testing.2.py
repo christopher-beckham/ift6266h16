@@ -24,10 +24,12 @@ if __name__ == "__main__":
     args["batch_size"] = 32
     args["learning_rate"] = 0.001
     args["momentum"] = 0.9
-    args["num_epochs"] = 1000
+    args["num_epochs"] = 2000
     args["X_train"] = X_train
     args["X_valid"] = X_valid
     args["X_test"] = X_test
+
+    args["in_model"] = "models/19feb_testing.model"
     
     args["config"] = "19feb_testing.py"
 
