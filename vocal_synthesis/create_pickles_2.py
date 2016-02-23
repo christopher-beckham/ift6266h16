@@ -36,6 +36,9 @@ test_data = data[ len(data)*test_start :: ]
 
 min_ = np.min(data)
 max_ = np.max(data)
+
+print "min and max calculated: %i, %i" % (min_, max_)
+
 train_data = (train_data - min_) / (max_ - min_)
 valid_data = (valid_data - min_) / (max_ - min_)
 test_data = (test_data - min_) / (max_ - min_)
