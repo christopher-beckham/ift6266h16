@@ -10,7 +10,6 @@ def get_net(args):
     # e.g. (bs, 50, 1800)
     X_train = args["X_train"]
     num_inputs = X_train.shape[2]
-    seq_length = X_train.shape[1] # determined by pkl
 
     num_hidden_units = 1500
 

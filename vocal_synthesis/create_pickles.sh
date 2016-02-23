@@ -13,4 +13,8 @@
 
 #python create_pickles_2.py 0.5 20 1800 $DATA_DIR/x0.5_20_1800.pkl
 
-python create_pickles_2.py 0.1 50 1800 $DATA_DIR/x0.1_50_1800.pkl
+#python create_pickles_2.py 0.1 50 1800 $DATA_DIR/x0.1_50_1800.pkl
+
+# python create_pickles_2.py 0.1 50 -1 $DATA_DIR/x0.1_50_all.pkl
+
+python create_pickles_2.py 1 50 -1 $DATA_DIR/x1_50_all.pkl

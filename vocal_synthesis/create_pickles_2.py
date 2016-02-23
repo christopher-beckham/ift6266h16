@@ -19,7 +19,7 @@ x_length = float(sys.argv[1])
 print "each x will represent %f samples (%f seconds)" % (x_length*fs, x_length)
 # a sequence is x_length*fs*seq_length long
 seq_length = int(sys.argv[2])
-print "each sequence will represent %f seconds" % ((0.5 * fs * 20) / fs)
+print "each sequence will represent %f seconds" % (x_length*seq_length)
 
 how_many_seconds = int(sys.argv[3]) # 60*20 = 20 minutes
 
