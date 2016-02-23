@@ -25,8 +25,9 @@ def prepare(args):
     np.random.seed(args["seed"])
     random.seed(args["seed"])
 
-    sys.stderr.write("loading config: %s\n" % ("configurations/" + args["config"]))
-    config = imp.load_source("config", "configurations/" + args["config"])
+    sys.stderr.write("loading config: %s\n" % (args["config"]))
+    #config = imp.load_source("config", "configurations/" + args["config"])
+    config = imp.load_source("config", args["config"])
 
     l_out = config.get_net(args)
 
