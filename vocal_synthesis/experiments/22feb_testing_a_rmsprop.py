@@ -1,10 +1,13 @@
-import rnn_experiment as experiment
 import numpy as np
 from scipy.io import wavfile
 import os
 import sys
+#os.chdir("..")
+sys.path.append( os.pardir )
+#sys.stderr.write("current working directory: %s\n" % os.getcwd())
 import cPickle as pickle
 from lasagne.updates import *
+import rnn_experiment as experiment
 
 if __name__ == "__main__":
 
@@ -31,7 +34,7 @@ if __name__ == "__main__":
     args["X_test"] = X_test
     args["update_method"] = rmsprop
     
-    args["config"] = "19feb_testing_d.py"
+    args["config"] = "../configurations/19feb_testing_d.py"
 
     model = experiment.train(args)
 
