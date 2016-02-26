@@ -17,4 +17,6 @@
 
 # python create_pickles_2.py 0.1 50 -1 $DATA_DIR/x0.1_50_all.pkl
 
-python create_pickles_2.py 1 50 -1 $DATA_DIR/x1_50_all.pkl
+#python create_pickles_2.py 1 50 -1 $DATA_DIR/x1_50_all.pkl
+
+python create_pickles_3.py 1 50 -1 $DATA_DIR/x1_50_all_use_mean.pkl
