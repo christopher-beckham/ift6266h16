@@ -33,13 +33,18 @@ if __name__ == "__main__":
     args["X_valid"] = X_valid
     args["X_test"] = X_test
     args["update_method"] = rmsprop
+    args["out_pkl"] = out_pkl
     
     args["config"] = "../configurations/19feb_testing_d_minimalist1.py"
 
+    """
     model = experiment.train(args)
+
 
     sys.stderr.write( "writing to file: %s\n" % (out_pkl) )
     with open(out_pkl, "wb") as f:
         pickle.dump(model, f, pickle.HIGHEST_PROTOCOL)
+    """
 
+    experiment.train(args)
 
