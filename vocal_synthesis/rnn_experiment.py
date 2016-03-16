@@ -134,7 +134,7 @@ def train(args):
             this_valid_has_improved = 1
             best_model = lasagne.layers.get_all_param_values(l_out)
             with open(args["out_pkl"], "wb") as f:
-                pickle.dump(model, f, pickle.HIGHEST_PROTOCOL)
+                pickle.dump(best_model, f, pickle.HIGHEST_PROTOCOL)
             
         this_train_loss = np.mean(train_losses)
         this_train_has_improved = 0
