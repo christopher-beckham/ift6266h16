@@ -34,6 +34,7 @@ if __name__ == "__main__":
     args["X_test"] = X_test
     args["update_method"] = rmsprop
     args["out_pkl"] = out_pkl
+    args["in_model"] = "../models/16mar_minimalist2_use_mean.model"
     
     args["config"] = "../configurations/19feb_testing_d_minimalist2.py"
 
