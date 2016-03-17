@@ -53,7 +53,7 @@ def prepare(args):
         seq_length = args["seq_length"]
 
     X = T.tensor3('X')
-    net_out = get_output(l_out, X)
+    net_out = get_output(l_out, X, deterministic=True)
     get_out = theano.function([X], net_out)
 
     loss = squared_error(net_out[:,0:seq_length-1,:], X[:,1::,:]).mean()
@@ -154,31 +154,5 @@ def train(args):
     return best_model
 
 def generate(args, model, seed, length):
-    X_test = args["X_test"]
-    symbols = prepare(args)
-
-    out_fn = symbols["out_fn"]
-
-    l_out = get_net(args)
-
-    set_all_param_values(l_out, model)
-
-    """
-    seed = X_valid[0:1]
-    seed = seed.reshape( (seed.shape[1], 1, 1) )
-    seed = seed[0].reshape( (1,1,1) )
-    """
-
-    generated_seq = []
-    prev_input = seed
-    for x in range(0, length):
-        next_input = eval_fn(prev_input)
-        generated_seq.append(next_input.flatten()[0])
-        prev_input = next_input
-
-    return generated_seq
-
-
-
-
+    pass
 
