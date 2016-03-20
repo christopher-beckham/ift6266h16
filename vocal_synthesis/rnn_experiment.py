@@ -29,7 +29,7 @@ def prepare(args):
     #config = imp.load_source("config", "configurations/" + args["config"])
     config = imp.load_source("config", args["config"])
 
-    l_out = config.get_net(args)
+    get_cfg = config.get_net(args)
 
     if "in_model" in args:
         sys.stderr.write("loading existing model at: %s\n" % args["in_model"])
@@ -47,16 +47,15 @@ def prepare(args):
 
     X_train = args["X_train"]
 
-    if "seq_length" not in args:
-        seq_length = X_train.shape[1]
-    else:
-        seq_length = args["seq_length"]
+    l_in = get_cfg["l_in"]
+    l_out = get_cfg["l_out"]
+    X = l_in.input_var
 
-    X = T.tensor3('X')
     net_out = get_output(l_out, X, deterministic=True)
+
     get_out = theano.function([X], net_out)
 
-    loss = squared_error(net_out[:,0:seq_length-1,:], X[:,1::,:]).mean()
+    loss = squared_error(net_out[:,0:-1,:], X[:,1::,:]).mean()
     params = get_all_params(l_out, trainable=True)
     loss_fn = theano.function([X], loss)
 

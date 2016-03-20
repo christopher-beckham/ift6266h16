@@ -26,4 +26,14 @@
 
 # each xi represents 0.25 of a second
 # we want 10 seconds of sequence
-python create_pickles_3.py 0.25 40 -1 $DATA_DIR/x0.25_10_all_use_mean.pkl
+#python create_pickles_3.py 0.25 40 -1 $DATA_DIR/x0.25_10_all_use_mean.pkl
+
+# each xi represents 0.1 of a second
+# we want 5 seconds of sequence
+#python create_pickles_3.py 0.1 50 -1 $DATA_DIR/x0.1_5_all_use_mean.pkl
+
+# each xi represents 1 second
+# we want 5 seconds of sequence
+#python create_pickles_3.py 1 5 -1 $DATA_DIR/x1_5_all_use_mean.pkl
+
+python create_pickles_3.py 0.25 20 -1 $DATA_DIR/x0.25_5_all_use_mean.pkl
