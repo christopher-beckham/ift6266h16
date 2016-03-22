@@ -47,15 +47,28 @@ test_data = (test_data - mean_) / (max_ - min_)
 dd = [train_data, valid_data, test_data]
 
 for i in range(0, len(dd)):
-    b = 0
     x_size = int(x_length*fs)
     batches = []
-    slide_arr = []
-    for j in range(0, len(dd[i])-x_size+1):
-        slide_arr.append( dd[i][j:j+x_size] )
-        if len(slide_arr) == seq_length:
-            batches.append( np.asarray(slide_arr) )
-            slide_arr.pop(0)
+
+    """
+    This is to generate 10x more training data, e.g
+    when offset=0, then we get things like
+    data[0:8000], data[8000:16000], etc. and
+    when offset=400 we get things like
+    data[400:8400], data[8400:16400], etc.
+    """
+    for offset in range(0, x_size, x_size/10):
+        seq = []
+        b = 0
+        while True:
+            if b*x_size >= dd[i].shape[0]:
+                break
+            this_x = dd[i][ (b*x_size)+offset : ((b+1)*x_size)+offset ]
+            seq.append(this_x)
+            if len(seq) == seq_length:
+                batches.append(seq)
+                seq = []
+            b += 1
     dd[i] = np.asarray(batches, dtype="float32")
     print "the shape of this array: %s" % (str(dd[i].shape))
 
