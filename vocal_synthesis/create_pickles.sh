@@ -36,4 +36,8 @@
 # we want 5 seconds of sequence
 #python create_pickles_3.py 1 5 -1 $DATA_DIR/x1_5_all_use_mean.pkl
 
-python create_pickles_3.py 0.25 20 -1 $DATA_DIR/x0.25_5_all_use_mean.pkl
+#python create_pickles_3.py 0.25 20 -1 $DATA_DIR/x0.25_5_all_use_mean.pkl
+
+
+
+python create_pickles_4.py 0.25 20 -1 $DATA_DIR/x0.25_5_all_more.pkl
