@@ -15,7 +15,7 @@ valid_start = 0.8
 data_folder = os.environ["DATA_DIR"]
 
 fs, data = wavfile.read(data_folder + os.path.sep + "data.wav")
-data = np.asarray(data, dtype="float32")
+data = np.asarray(data, dtype="float32")[0:1000000]
 
 # if x_length == 0.5, then
 # x_length*fs = 16000*0.5 = 8000
@@ -27,6 +27,10 @@ seq_length = int(sys.argv[2])
 print "each sequence will represent %f seconds" % (x_length*seq_length)
 
 how_many_seconds = int(sys.argv[3]) # 60*20 = 20 minutes
+
+offset_size = int(sys.argv[4])
+print "offset_size: %i" % offset_size
+
 
 if how_many_seconds > 0:
     sys.stderr.write("truncating data to %i seconds\n" % how_many_seconds)
@@ -52,7 +56,12 @@ for i in range(0, len(dd)):
     when offset=400 we get things like
     data[400:8400], data[8400:16400], etc.
     """
-    for offset in range(0, x_size, x_size/6):
+    if offset_size > 0:
+        offsets = range(0, x_size, x_size/offset_size)
+    else:
+        offsets = [0]
+
+    for offset in offsets:
         seq = []
         b = 0
         while True:
@@ -104,4 +113,4 @@ for i in range(0, len(dd)):
     print "normalising imaginary elements..."
     dd[i][:,:,x_size::] = (dd[i][:,:,x_size::] - imag_max) / (imag_max - imag_min)
 
-np.savez(sys.argv[4], dd[0], dd[1], dd[2], allow_pickle=False)
+np.savez(sys.argv[5], dd[0], dd[1], dd[2], allow_pickle=False)
