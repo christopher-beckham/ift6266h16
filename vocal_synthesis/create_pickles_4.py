@@ -57,7 +57,7 @@ for i in range(0, len(dd)):
     when offset=400 we get things like
     data[400:8400], data[8400:16400], etc.
     """
-    for offset in range(0, x_size, x_size/10):
+    for offset in range(0, x_size, x_size/6):
         seq = []
         b = 0
         while True:
@@ -72,5 +72,7 @@ for i in range(0, len(dd)):
     dd[i] = np.asarray(batches, dtype="float32")
     print "the shape of this array: %s" % (str(dd[i].shape))
 
-with open(sys.argv[4], "wb") as f:
-    pickle.dump( (dd, min_, max_), f, pickle.HIGHEST_PROTOCOL )
+#with open(sys.argv[4], "wb") as f:
+#    pickle.dump( (dd, min_, max_), f, pickle.HIGHEST_PROTOCOL )
+
+np.savez(sys.argv[4], dd[0], dd[1], dd[2], allow_pickle=False)
