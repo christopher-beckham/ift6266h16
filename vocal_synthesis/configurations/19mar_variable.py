@@ -19,6 +19,9 @@ def get_net(args):
         if args["nonlinearity"] == "relu":
             nonlinearity = rectify
             sys.stderr.write("using relu nonlinearity\n")
+        elif args["nonlinearity"] == "sigmoid":
+            nonlinearity = sigmoid
+            sys.stderr.write("using sigmoid nonlinearity\n")
 
     l_input = InputLayer((None, None, num_inputs))
     l_prev = l_input

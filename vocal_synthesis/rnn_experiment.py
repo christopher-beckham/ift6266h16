@@ -33,7 +33,7 @@ def prepare(args):
 
     if "in_model" in args:
         sys.stderr.write("loading existing model at: %s\n" % args["in_model"])
-        layers = get_all_layers(l_out)[::-1]
+        layers = get_all_layers(get_cfg["l_out"])[::-1]
         sys.stderr.write("debug: %s\n" % str(layers))
         with open(args["in_model"]) as f:
             in_model = pickle.load(f)

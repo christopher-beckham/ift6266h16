@@ -40,4 +40,4 @@
 
 
 
-python create_pickles_4.py 0.25 20 -1 $DATA_DIR/x0.25_5_all_more.pkl
+python create_pickles_4.py 0.25 20 -1 $DATA_DIR/x0.25_5_all_more.npy
