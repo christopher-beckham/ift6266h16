@@ -39,16 +39,6 @@ valid_data = data[ len(data)*valid_start : len(data)*test_start ]
 # e.g. 0.9 ::
 test_data = data[ len(data)*test_start :: ]
 
-mean_ = np.mean(data)
-min_ = np.min(data)
-max_ = np.max(data)
-
-print "min and max calculated: %i, %i" % (min_, max_)
-
-train_data = (train_data - mean_) / (max_ - min_)
-valid_data = (valid_data - mean_) / (max_ - min_)
-test_data = (test_data - mean_) / (max_ - min_)
-
 dd = [train_data, valid_data, test_data]
 
 for i in range(0, len(dd)):
@@ -66,9 +56,9 @@ for i in range(0, len(dd)):
         seq = []
         b = 0
         while True:
-            if b*x_size >= dd[i].shape[0]:
-                break
             this_x = dd[i][ (b*x_size)+offset : ((b+1)*x_size)+offset ]
+            if len(this_x) != x_size:
+                break
             seq.append( fft(this_x) )
             if len(seq) == seq_length:
                 batches.append(seq)
@@ -79,5 +69,39 @@ for i in range(0, len(dd)):
 
 #with open(sys.argv[4], "wb") as f:
 #    pickle.dump( (dd, min_, max_), f, pickle.HIGHEST_PROTOCOL )
+
+real_min = np.min(
+    [np.min(dd[0][:,:,0:x_size]),
+    np.min(dd[1][:,:,0:x_size]),
+    np.min(dd[2][:,:,0:x_size])]
+)
+real_max = np.max(
+    [np.max(dd[0][:,:,0:x_size]),
+    np.max(dd[1][:,:,0:x_size]),
+    np.max(dd[2][:,:,0:x_size])]
+)
+
+imag_min = np.min(
+    [np.min(dd[0][:,:,x_size::]),
+    np.min(dd[1][:,:,x_size::]),
+    np.min(dd[2][:,:,x_size::])]
+)
+imag_max = np.max(
+    [np.max(dd[0][:,:,x_size::]),
+    np.max(dd[1][:,:,x_size::]),
+    np.max(dd[2][:,:,x_size::])]
+)
+
+print "real min, real max, imag min, imag max = %f, %f, %f, %f" % (real_min, real_max, imag_min, imag_max)
+
+
+# now compute the min/max
+for i in range(0, len(dd)):
+
+    print "normalising real elements..."
+    dd[i][:,:,0:x_size] = (dd[i][:,:,0:x_size] - real_min) / (real_max - real_min)
+
+    print "normalising imaginary elements..."
+    dd[i][:,:,x_size::] = (dd[i][:,:,x_size::] - imag_max) / (imag_max - imag_min)
 
 np.savez(sys.argv[4], dd[0], dd[1], dd[2], allow_pickle=False)
