@@ -42,4 +42,7 @@
 
 #python create_pickles_4.py 0.25 20 -1 $DATA_DIR/x0.25_5_all_more.npy
 
-python create_pickles_4_fft.py 0.125 20 -1 $DATA_DIR/x0.125_all_more_fft.npy
+
+
+python create_pickles_4_fft.py 0.125 20 -1 6 $DATA_DIR/x0.125_all_offset6_fft.npy
+python create_pickles_4_fft_finish.py $DATA_DIR/x0.125_all_offset6_fft.npy

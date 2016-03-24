@@ -76,7 +76,7 @@ for i in range(0, len(dd)):
             seq.append( fft(this_x) )
             if len(seq) == seq_length:
                 #batches.append(seq)
-                np.save( tmp_dirs[i] + ("/dump_%i.npy" % b), seq )
+		np.save( tmp_dirs[i] + ("/dump_%i_%i.npy" % (b, offset)), seq )
                 num_saved += 1
                 seq = []
             b += 1
