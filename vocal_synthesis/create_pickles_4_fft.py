@@ -15,7 +15,7 @@ valid_start = 0.8
 data_folder = os.environ["DATA_DIR"]
 
 fs, data = wavfile.read(data_folder + os.path.sep + "data.wav")
-data = np.asarray(data, dtype="float32")[0:1000000]
+data = np.asarray(data, dtype="float32")
 
 # if x_length == 0.5, then
 # x_length*fs = 16000*0.5 = 8000
@@ -45,6 +45,11 @@ test_data = data[ len(data)*test_start :: ]
 
 dd = [train_data, valid_data, test_data]
 
+tmp_dirs = ["/tmp/dumps/train", "/tmp/dumps/valid", "/tmp/dumps/test"]
+for tmp in tmp_dirs:
+    os.makedirs(tmp)
+
+num_saved = 0
 for i in range(0, len(dd)):
     x_size = int(x_length*fs)
     batches = []
@@ -70,14 +75,20 @@ for i in range(0, len(dd)):
                 break
             seq.append( fft(this_x) )
             if len(seq) == seq_length:
-                batches.append(seq)
+                #batches.append(seq)
+                np.save( tmp_dirs[i] + ("/dump_%i.npy" % b), seq )
+                num_saved += 1
                 seq = []
             b += 1
-    dd[i] = np.asarray(batches, dtype="float32")
-    print "the shape of this array: %s" % (str(dd[i].shape))
+    #dd[i] = np.asarray(batches, dtype="float32")
+    #print "the shape of this array: %s" % (str(dd[i].shape))
 
 #with open(sys.argv[4], "wb") as f:
 #    pickle.dump( (dd, min_, max_), f, pickle.HIGHEST_PROTOCOL )
+
+print "saved %i npy files: " % num_saved
+
+"""
 
 real_min = np.min(
     [np.min(dd[0][:,:,0:x_size]),
@@ -114,3 +125,5 @@ for i in range(0, len(dd)):
     dd[i][:,:,x_size::] = (dd[i][:,:,x_size::] - imag_max) / (imag_max - imag_min)
 
 np.savez(sys.argv[5], dd[0], dd[1], dd[2], allow_pickle=False)
+
+"""
