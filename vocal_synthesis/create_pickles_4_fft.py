@@ -76,7 +76,7 @@ for i in range(0, len(dd)):
             seq.append( fft(this_x) )
             if len(seq) == seq_length:
                 #batches.append(seq)
-                np.save( tmp_dirs[i] + ("/dump_%i.npy" % b), seq )
+                np.save( tmp_dirs[i] + ("/dump_%i.npy" % num_saved), seq )
                 num_saved += 1
                 seq = []
             b += 1
@@ -87,43 +87,3 @@ for i in range(0, len(dd)):
 #    pickle.dump( (dd, min_, max_), f, pickle.HIGHEST_PROTOCOL )
 
 print "saved %i npy files: " % num_saved
-
-"""
-
-real_min = np.min(
-    [np.min(dd[0][:,:,0:x_size]),
-    np.min(dd[1][:,:,0:x_size]),
-    np.min(dd[2][:,:,0:x_size])]
-)
-real_max = np.max(
-    [np.max(dd[0][:,:,0:x_size]),
-    np.max(dd[1][:,:,0:x_size]),
-    np.max(dd[2][:,:,0:x_size])]
-)
-
-imag_min = np.min(
-    [np.min(dd[0][:,:,x_size::]),
-    np.min(dd[1][:,:,x_size::]),
-    np.min(dd[2][:,:,x_size::])]
-)
-imag_max = np.max(
-    [np.max(dd[0][:,:,x_size::]),
-    np.max(dd[1][:,:,x_size::]),
-    np.max(dd[2][:,:,x_size::])]
-)
-
-print "real min, real max, imag min, imag max = %f, %f, %f, %f" % (real_min, real_max, imag_min, imag_max)
-
-
-# now compute the min/max
-for i in range(0, len(dd)):
-
-    print "normalising real elements..."
-    dd[i][:,:,0:x_size] = (dd[i][:,:,0:x_size] - real_min) / (real_max - real_min)
-
-    print "normalising imaginary elements..."
-    dd[i][:,:,x_size::] = (dd[i][:,:,x_size::] - imag_max) / (imag_max - imag_min)
-
-np.savez(sys.argv[5], dd[0], dd[1], dd[2], allow_pickle=False)
-
-"""
