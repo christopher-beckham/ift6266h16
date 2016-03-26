@@ -34,11 +34,18 @@ def get_net(args):
 	    out_nonlinearity=tanh
 	    sys.stderr.write("using tanh out nonlinearity\n")
 
+    if "forget_gate" in args:
+        sys.stderr.write("using forget gate init with value = %i" % args["forget_gate"])
+        forget_gate = Gate(b=Constant(args["forget_gate"]))
+    else:
+        forget_gate = Gate(b=Constant(0.0))
+
     l_input = InputLayer((None, None, num_inputs))
     l_prev = l_input
     for unit in units:
     	l_forward = LSTMLayer(
-            l_prev, num_units=unit, unroll_scan=False, precompute_input=True, nonlinearity=nonlinearity
+            l_prev, num_units=unit, unroll_scan=False, precompute_input=True, nonlinearity=nonlinearity,
+            forgetgate=forget_gate
         )
         l_prev = l_forward
     l_shp = ReshapeLayer(l_forward, (-1, units[-1]))
