@@ -44,5 +44,8 @@
 
 
 
-python create_pickles_4_fft.py 0.125 20 -1 6 $DATA_DIR/x0.125_all_offset6_fft.npy
-python create_pickles_4_fft_finish.py $DATA_DIR/x0.125_all_offset6_fft.npy
+#python create_pickles_4_fft.py 0.125 20 -1 2 $DATA_DIR/x0.125_5_all_offset2_fft.npy
+#python create_pickles_4_fft_finish.py $DATA_DIR/x0.125_5_all_offset2_fft.npy
+
+python create_pickles_4_fft.py 0.5 6 -1 2
+python create_pickles_4_fft_finish.py $DATA_DIR/x0.5_6_all_offset2_fft.npy
