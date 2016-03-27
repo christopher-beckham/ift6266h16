@@ -75,3 +75,5 @@ for i in range(0, len(dd)):
 #    pickle.dump( (dd, min_, max_), f, pickle.HIGHEST_PROTOCOL )
 
 np.savez(sys.argv[5], dd[0], dd[1], dd[2], allow_pickle=False)
+
+np.savez(sys.argv[5] + ".sample", dd[0][0:100], dd[1][0:100], dd[2][0:100], allow_pickle=False)
