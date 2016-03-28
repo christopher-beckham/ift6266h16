@@ -119,8 +119,6 @@ def train(args):
 
     for epoch in range(0, num_epochs):
 
-    	random.shuffle(idxs)
-
         t0 = time()
 
         train_losses = []
