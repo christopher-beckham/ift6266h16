@@ -26,15 +26,11 @@ for i in range(0, len(tmp_dirs)):
     # this is what messes up the precision
     dd[i] = np.asarray(batches, dtype="float32")
 
-std_ = np.std(
-    [dd[0][:,:,:],
-    dd[1][:,:,:],
-    dd[2][:,:,:]]
-)
+std_ = np.std( dd[0][:,:,:] )
 
 print "num loaded: %i" % num_loaded
 
-print "std = %f, %f" % std_
+print "std = %f" % std_
 
 print "debug"
 print dd[0][0]
@@ -42,8 +38,10 @@ print "end debug"
 
 for i in range(0, len(dd)):
 
+    print "min, max = %f, %f" % (np.min(dd[i]), np.max(dd[i]))
     print "normalising elements..."
     dd[i][:,:,:] = dd[i][:,:,:] / std_
+    print "min, max = %f, %f" % (np.min(dd[i]), np.max(dd[i]))
 
 print "debug"
 print dd[0][0]

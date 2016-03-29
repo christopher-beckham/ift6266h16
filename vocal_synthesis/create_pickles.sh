@@ -60,4 +60,13 @@
 
 #python  create_pickles_4_with_offsets_use_std.py 0.5 20 -1 10 $DATA_DIR/x0.5_10_all_offset10_std.npy
 
-python create_pickles_4_with_offsets_use_std.py 0.25 40 -1 10 $DATA_DIR/x0.25_10_all_offset10_std.npy
+#python create_pickles_4_with_offsets_use_std.py 0.25 40 -1 10 $DATA_DIR/x0.25_10_all_offset10_std.npy
+
+#python create_pickles_4_fft_std.py 0.5 12 -1 3
+#python create_pickles_4_fft_std_finish.py $DATA_DIR/x0.5_12_all_offset3_fft_std.npy
+
+#python create_pickles_4_fft_std.py 0.25 40 -1 4
+#python create_pickles_4_fft_std_finish.py $DATA_DIR/x0.25_10_all_offset4_fft_std.npy
+
+#python create_pickles_4_fft_std.py 0.25 40 -1 5
+python create_pickles_4_fft_std_finish.py $DATA_DIR/x0.25_10_all_offset5_fft_std.npy
