@@ -41,7 +41,8 @@ def get_net(args):
         forget_gate = Gate(b=Constant(0.0))
 
     l_input = InputLayer((None, None, num_inputs))
-    l_prev = l_input
+    l_noise = GaussianNoiseLayer(l_input, sigma=args["sigma"] if "sigma" in args else 0.0)
+    l_prev = l_noise
     for unit in units:
     	l_forward = LSTMLayer(
             l_prev, num_units=unit, unroll_scan=False, precompute_input=True, nonlinearity=nonlinearity,
