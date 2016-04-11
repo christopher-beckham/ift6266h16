@@ -56,7 +56,8 @@ def prepare(args):
     index = T.lscalar()
     batch_size = args["batch_size"]
 
-    net_out = get_output(l_out, X, deterministic=True)
+    net_out = get_output(l_out, X)
+    net_out_det = get_output(l_out, X, deterministic=True)
 
     get_out = theano.function([X], net_out)
 
@@ -85,7 +86,7 @@ def prepare(args):
         X: X_valid
     })
 
-    out_fn = theano.function([X], net_out)
+    out_fn = theano.function([X], net_out_det)
 
     return {
         "l_out": l_out,

@@ -39,9 +39,14 @@ def get_net(args):
         forget_gate = Gate(b=Constant(args["forget_gate"]))
     else:
         forget_gate = Gate(b=Constant(0.0))
-
     l_input = InputLayer((None, None, num_inputs))
-    l_prev = l_input
+    n_batch, n_time_steps, _ = l_input.input_var.shape
+    if "input_dropout_p" in args:
+        l_drop = DropoutLayer(l_input, p=args["input_dropout_p"] if "input_dropout_p" in args else 0.0)
+        l_prev = l_drop
+    elif "sigma" in args:
+        l_noise = GaussianNoiseLayer(l_input, sigma=args["sigma"])
+        l_prev = l_noise
     for unit in units:
     	l_forward = LSTMLayer(
             l_prev, num_units=unit, unroll_scan=False, precompute_input=True, nonlinearity=nonlinearity,
@@ -50,7 +55,6 @@ def get_net(args):
         l_prev = l_forward
     l_shp = ReshapeLayer(l_forward, (-1, units[-1]))
     l_dense = DenseLayer(l_shp, num_units=num_inputs, nonlinearity=out_nonlinearity)
-    n_batch, n_time_steps, _ = l_input.input_var.shape
     l_out = ReshapeLayer(l_dense, (n_batch, n_time_steps, num_inputs))
     sys.stderr.write("Number of params in model: %i\n" % count_params(l_out))
     for layer in get_all_layers(l_out):
