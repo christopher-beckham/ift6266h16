@@ -47,6 +47,8 @@ def get_net(args):
     elif "sigma" in args:
         l_noise = GaussianNoiseLayer(l_input, sigma=args["sigma"])
         l_prev = l_noise
+    else:
+        l_prev = l_input
     for unit in units:
     	l_forward = LSTMLayer(
             l_prev, num_units=unit, unroll_scan=False, precompute_input=True, nonlinearity=nonlinearity,

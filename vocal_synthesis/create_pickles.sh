@@ -73,4 +73,6 @@
 
 #python create_pickles_4_with_offsets_use_std.py 0.125 80 -1 10 $DATA_DIR/x0.125_10_all_offset10_std.npy
 
-python create_pickles_4_with_offsets_use_std.py 0.1 100 -1 10 $DATA_DIR/x0.1_10_all_offset10_std.npy
+#python create_pickles_4_with_offsets_use_std.py 0.1 100 -1 10 $DATA_DIR/x0.1_10_all_offset10_std.npy
+
+python create_pickles_4_with_offsets_use_std.py 0.125 160 -1 10 $DATA_DIR/x0.125_20_all_offset10_std.npy

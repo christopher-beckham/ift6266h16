@@ -67,6 +67,7 @@ for i in range(0, len(dd)):
         offsets = [0]
 
     for offset in offsets:
+        print offset
         seq = []
         b = 0
         while True:
